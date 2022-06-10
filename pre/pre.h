@@ -8,6 +8,7 @@
 #include "vector"
 #include "string"
 #include "variant"
+#include "map"
 
 class Material {
     std::string name;
