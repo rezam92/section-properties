@@ -13,6 +13,8 @@
 class geometry {
 public:
     geometry(
+            ///TODO
+            /// geom is shape
             int geom,
             Material material,
             int tol = 12,
