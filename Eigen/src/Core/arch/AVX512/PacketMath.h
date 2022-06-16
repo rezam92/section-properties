@@ -2145,7 +2145,7 @@ EIGEN_STRONG_INLINE Packet16bf preverse(const Packet16bf& a) {
   Packet16bf res;
   // Swap hi and lo first because shuffle is in 128-bit lanes.
   res = _mm256_permute2x128_si256(a, a, 1);
-  // Shuffle 8-bit values in src within 2*128-bit lanes.
+  // Shuffle 8-bit values in qhull within 2*128-bit lanes.
   return _mm256_shuffle_epi8(res, m);
 }
 

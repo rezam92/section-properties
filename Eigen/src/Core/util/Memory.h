@@ -903,7 +903,7 @@ public:
 
   #if EIGEN_COMP_GNUC_STRICT && EIGEN_GNUC_AT_LEAST(7,0)
   // In gcc std::allocator::max_size() is bugged making gcc triggers a warning:
-  // eigen/Eigen/src/Core/util/Memory.h:189:12: warning: argument 1 value '18446744073709551612' exceeds maximum object size 9223372036854775807
+  // eigen/Eigen/qhull/Core/util/Memory.h:189:12: warning: argument 1 value '18446744073709551612' exceeds maximum object size 9223372036854775807
   // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87544
   size_type max_size() const {
     return (std::numeric_limits<std::ptrdiff_t>::max)()/sizeof(T);

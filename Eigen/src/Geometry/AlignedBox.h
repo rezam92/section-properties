@@ -341,7 +341,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(_Scalar,_AmbientDim)
     // Only Affine and Isometry transforms are currently supported.
     EIGEN_STATIC_ASSERT(Mode == Affine || Mode == AffineCompact || Mode == Isometry, THIS_METHOD_IS_ONLY_FOR_SPECIFIC_TRANSFORMATIONS);
 
-    // Method adapted from FCL src/shape/geometric_shapes_utility.cpp#computeBV<AABB, Box>(...)
+    // Method adapted from FCL qhull/shape/geometric_shapes_utility.cpp#computeBV<AABB, Box>(...)
     // https://github.com/flexible-collision-library/fcl/blob/fcl-0.4/src/shape/geometric_shapes_utility.cpp#L292
     //
     // Here's a nice explanation why it works: https://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/

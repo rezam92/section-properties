@@ -20,12 +20,12 @@
 
 #ifndef _29b995ef_16f0_49e8_a6bf_94f852821a14
 #define _29b995ef_16f0_49e8_a6bf_94f852821a14
+
 #include "../../../Eigen/Core"
-namespace distmesh {
-namespace triangulation {
-    // create delaunay triangulation from points array
+
+namespace distmesh::triangulation {
+    // create delsaunay triangulation from points array
     Eigen::ArrayXXi delaunay(Eigen::Ref<Eigen::ArrayXXd const> const points);
-}
 }
 
 #endif

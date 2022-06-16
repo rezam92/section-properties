@@ -22,15 +22,14 @@
 
 // qhull library used to calculate delaunay triangulation
 extern "C" {
-    #define qh_QHimport
-    #include "qhull_a.h"
+#define qh_QHimport
+#include <qhull_a.h>
 }
 
 #include "../include/distmesh/distmesh.h"
 #include "../include/distmesh/triangulation.h"
 
-Eigen::ArrayXXi distmesh::triangulation::delaunay(
-    Eigen::Ref<Eigen::ArrayXXd const> const points) {
+Eigen::ArrayXXi distmesh::triangulation::delaunay(Eigen::Ref<Eigen::ArrayXXd const> const points) {
 
     // reset qhull
     if (qh_qh) {
@@ -38,40 +37,42 @@ Eigen::ArrayXXi distmesh::triangulation::delaunay(
     }
 
     // convert points array to row major format
+
     Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic,
-        Eigen::RowMajor> pointsRowMajor = points;
+            Eigen::RowMajor> pointsRowMajor = points;
 
     // calculate delaunay triangulation
     std::string flags = "qhull d Qt Qbb Qc Qz";
     qh_new_qhull(points.cols(), points.rows(), pointsRowMajor.data(), False,
-        (char*)flags.c_str(), nullptr, stderr);
+                 (char *) flags.c_str(), nullptr, stderr);
     qh_triangulate();
 
     // count all upper delaunay facets
     unsigned facetCount = 0;
-    facetT* facet;
-    FORALLfacets {
-        if (!facet->upperdelaunay) {
-            facetCount++;
-        }
+    facetT *facet;
+    FORALLfacets{
+            if (!facet->upperdelaunay) {
+                facetCount++;
+            }
     }
 
     // extract point ids from delaunay triangulation
     Eigen::ArrayXXi triangulation(facetCount, points.cols() + 1);
     unsigned facetId = 0;
     unsigned vertexId = 0;
-    vertexT* vertex, **vertexp;
+    vertexT *vertex, **vertexp;
 
-    FORALLfacets {
-        vertexId = 0;
-        if (!facet->upperdelaunay) {
-            qh_setsize(facet->vertices);
-            FOREACHvertex_(facet->vertices) {
-                triangulation(facetId, vertexId) = qh_pointid(vertex->point);
-                vertexId++;
+    FORALLfacets{
+            vertexId = 0;
+            if (!facet->upperdelaunay) {
+                qh_setsize(facet->vertices);
+                FOREACHvertex_(facet->vertices)
+                {
+                    triangulation(facetId, vertexId) = qh_pointid(vertex->point);
+                    vertexId++;
+                }
+                facetId++;
             }
-            facetId++;
-        }
     }
 
     return triangulation;

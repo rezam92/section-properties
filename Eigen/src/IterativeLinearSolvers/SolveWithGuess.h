@@ -106,7 +106,7 @@ struct Assignment<DstXprType, SolveWithGuess<DecType,RhsType,GuessType>, interna
       dst.resize(dstRows, dstCols);
 
     dst = src.guess();
-    src.dec()._solve_with_guess_impl(src.rhs(), dst/*, src.guess()*/);
+    src.dec()._solve_with_guess_impl(src.rhs(), dst/*, qhull.guess()*/);
   }
 };
 
