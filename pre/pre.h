@@ -9,6 +9,7 @@
 #include "string"
 #include "variant"
 #include "map"
+#include "../Eigen/Core"
 
 class Material {
     std::string name;
@@ -27,11 +28,11 @@ public:
 const Material DEFAULT_MATERIAL = Material("default", 1, 0, 1, 1, "w");
 
 
-void create_mesh(
-            std::vector<std::vector<float>> points,
-            std::vector<std::vector<float>> facets,
-            std::vector<std::vector<float>> holes,
-            std::vector<std::vector<float>> control_points,
+Eigen::ArrayXXi create_mesh(
+            Eigen::ArrayXXd points,
+            Eigen::ArrayXXd facets,
+            Eigen::ArrayXXd holes,
+            Eigen::ArrayXXd control_points,
             std::variant<std::vector<float>, float> mesh_sizes,
             bool coarse
         );
