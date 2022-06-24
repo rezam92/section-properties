@@ -36,5 +36,16 @@ private:
     Material material = DEFAULT_MATERIAL; //Material("mat", 0, 0, 0, 0, "mat");
 };
 
+Eigen::ArrayXXd gauss_points(int n);
+
+tuple<Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point);
+
+tuple<Eigen::ArrayXXd> extrapolate_to_nodes(tuple<Eigen::ArrayXXd> w);
+
+tuple<float> principal_coordinate(float phi, float x, float y);
+
+tuple<float> global_coordinate(float phi, float x11, float y22);
+
+bool point_above_line(tuple<Eigen::ArrayXXd> u, float px, float py, float x, float y);
 
 #endif //SECTION_PROPERTIES_CPP_FEA_H

@@ -46,3 +46,28 @@ bool Tri6::point_within_element(Eigen::ArrayX<float> pt) {
 }
 
 
+// --- define function
+
+Eigen::ArrayXXd gauss_points(int n) {
+    return Eigen::ArrayXXd();
+}
+
+tuple<Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point) {
+    return tuple<Eigen::ArrayXXd, float>();
+}
+
+tuple<Eigen::ArrayXXd> extrapolate_to_nodes(tuple<Eigen::ArrayXXd> w) {
+    return tuple<Eigen::ArrayXXd>();
+}
+
+tuple<float> principal_coordinate(float phi, float x, float y) {
+    return tuple<float>();
+}
+
+tuple<float> global_coordinate(float phi, float x11, float y22) {
+    return tuple<float>();
+}
+
+bool point_above_line(tuple<Eigen::ArrayXXd> u, float px, float py, float x, float y) {
+    return false;
+}
