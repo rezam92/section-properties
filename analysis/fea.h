@@ -38,7 +38,7 @@ private:
 
 Eigen::ArrayXXd gauss_points(int n);
 
-tuple<Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point);
+tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point);
 
 tuple<Eigen::ArrayXXd> extrapolate_to_nodes(tuple<Eigen::ArrayXXd> w);
 

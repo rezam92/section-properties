@@ -87,9 +87,9 @@ Eigen::ArrayXXd gauss_points(int n) {
     throw "Invalid value of `n`";
 }
 
-//TODO: define
-tuple<Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point) {
+tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point) {
 
+    // cordes 2x6
     double eta = gauss_point(0);
     double xi = gauss_point(1);
     double zeta = gauss_point(2);
@@ -108,12 +108,38 @@ tuple<Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::Arra
             0, 0, 4 * zeta - 1, 0, 4 * xi, 4 * eta;
 
     Eigen::ArrayXXd J_upper(1, 3);
-    J_upper << 1,1,1;
+    J_upper << 1, 1, 1;
 
-    Eigen::ArrayXXd J_lower(1, 3);
+    Eigen::ArrayXXd J_lower;
+    // 2x6 --- 6x3 = 2x3
+    J_lower = coords * B_iso.transpose();
+
+    Eigen::ArrayXXd J(3, 3);
+
+    J.row(0) = J_upper;
+    J.row(1) = J_lower.row(0);
+    J.row(2) = J_lower.row(1);
+
+    double j = 0.5 * (J.matrix()).determinant();
+    Eigen::ArrayXXd B;
+    if (j != 0) {
+        //        # calculate the P matrix
+        Eigen::ArrayXXd mul(3, 2);
+        mul << 0, 0,
+                1, 0,
+                0, 1;
+        Eigen::MatrixXd P = (J).inverse() * mul;
+
+        //        # calculate the B matrix in terms of cartesian co-ordinates
+        B = (B_iso.transpose() * P.array()).transpose();
+    } else {
+        B = Eigen::ArrayXXd::Zero(2, 6);
+    }
 
 
-    return tuple<Eigen::ArrayXXd, float>();
+    tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> ret(N, B, j);
+
+    return ret;
 }
 
 //TODO: define
