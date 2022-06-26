@@ -13,7 +13,7 @@ using namespace std;
 
 class Tri6 {
 public:
-    Tri6();
+//    Tri6();
     tuple<float> geometric_properties();
     tuple<Eigen::ArrayXXd> torsion_properties();
     tuple<Eigen::ArrayXXd> shear_load_vectors(float ixx, float iyy, float ixy, float nu);
@@ -30,7 +30,7 @@ public:
     );
     bool point_within_element(Eigen::ArrayX<float> pt);
 private:
-    int el_id;
+    int el_id = 0;
     Eigen::ArrayXXd coords;
     Eigen::ArrayXd node_ids;
     Material material = DEFAULT_MATERIAL; //Material("mat", 0, 0, 0, 0, "mat");
