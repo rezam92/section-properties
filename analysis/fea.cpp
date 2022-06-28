@@ -53,7 +53,6 @@ bool Tri6::point_within_element(Eigen::ArrayX<float> pt) {
     return false;
 }
 
-
 // --- define function
 
 Eigen::ArrayXXd gauss_points(int n) {
@@ -87,7 +86,7 @@ Eigen::ArrayXXd gauss_points(int n) {
     throw "Invalid value of `n`";
 }
 
-tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd coords, Eigen::ArrayXXd gauss_point) {
+tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> shape_function(const Eigen::ArrayXXd& coords, Eigen::ArrayXXd gauss_point) {
 
     // cordes 2x6
     double eta = gauss_point(0);
@@ -142,22 +141,54 @@ tuple<Eigen::ArrayXXd, Eigen::ArrayXXd, float> shape_function(Eigen::ArrayXXd co
     return ret;
 }
 
-//TODO: define
-tuple<Eigen::ArrayXXd> extrapolate_to_nodes(tuple<Eigen::ArrayXXd> w) {
-    return tuple<Eigen::ArrayXXd>();
+tuple<Eigen::ArrayXXd> extrapolate_to_nodes(Eigen::ArrayXXd w) {
+    Eigen::ArrayXXd H_inv(7,6);
+    H_inv << 1.87365927351160,0.138559587411935,0.138559587411935,-0.638559587411936,0.126340726488397,-0.638559587411935,
+            1.87365927351160, 0.138559587411935,0.138559587411935,-0.638559587411936,0.126340726488397,-0.638559587411935,
+            0.138559587411935,1.87365927351160,0.138559587411935,-0.638559587411935,-0.638559587411935,0.126340726488397,
+            0.138559587411935,0.138559587411935,1.87365927351160,0.126340726488396,-0.638559587411935,-0.638559587411935,
+            0.0749010751157440,0.0749010751157440,0.180053080734478,1.36051633430762,-0.345185782636792,-0.345185782636792,
+            0.180053080734478,0.0749010751157440,0.0749010751157440,-0.345185782636792,1.36051633430762,-0.345185782636792,
+            0.0749010751157440,0.180053080734478,0.0749010751157440,-0.345185782636792,-0.345185782636792,1.36051633430762;
+
+    return H_inv * w;
 }
 
-//TODO: define
-tuple<float> principal_coordinate(float phi, float x, float y) {
-    return tuple<float>();
+tuple<float, float> principal_coordinate(float phi, float x, float y) {
+    double phi_rad = phi * M_PI / 180;
+
+    Eigen::ArrayXXd R;
+
+    R << cos(phi_rad), sin(phi_rad), -sin(phi_rad), cos(phi_rad);
+
+    Eigen::ArrayXXd arr;
+    arr << x, y;
+    Eigen::ArrayXXd x_rotated = R* arr;
+
+    return tuple(x_rotated(0), x_rotated(1));
+
 }
 
-//TODO: define
-tuple<float> global_coordinate(float phi, float x11, float y22) {
-    return tuple<float>();
+tuple<float, float> global_coordinate(float phi, float x11, float y22) {
+    double phi_rad = phi * M_PI / 180;
+
+    Eigen::ArrayXXd R;
+
+    R << cos(phi_rad), -sin(phi_rad), sin(phi_rad), cos(phi_rad);
+
+    Eigen::ArrayXXd arr;
+    arr << x11, y22;
+    Eigen::ArrayXXd x_rotated = R* arr;
+
+    return tuple(x_rotated(0), x_rotated(1));
 }
 
-//TODO: define
-bool point_above_line(tuple<Eigen::ArrayXXd> u, float px, float py, float x, float y) {
-    return false;
+bool point_above_line(Eigen::Array<double,1,2> u, float px, float py, float x, float y) {
+    Eigen::ArrayXXd PQ;
+    PQ << px-x, py-y;
+
+    Eigen::Matrix res = PQ.matrix().cross(u.matrix());
+
+    return res(0) >  0;
+
 }
