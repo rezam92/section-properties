@@ -48,7 +48,7 @@ private:
 
 Eigen::MatrixXd gauss_points(int n);
 
-tuple<Eigen::MatrixXd, Eigen::MatrixXd, float>
+tuple<Eigen::Matrix<double, 1, 6> , Eigen::Matrix<double, 2, 6>, float>
 shape_function(const Eigen::MatrixXd &coords, Eigen::MatrixXd gauss_point);
 
 tuple<Eigen::MatrixXd> extrapolate_to_nodes(tuple<Eigen::MatrixXd> w);
