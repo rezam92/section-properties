@@ -98,7 +98,7 @@ tuple<Eigen::MatrixXd, Eigen::MatrixXd> Tri6::shear_load_vectors(float ixx, floa
     for (int i = 0; i < gps.rows(); ++i) {
         Eigen::MatrixXd gp = gps.row(i);
         //# determine shape function, shape function derivative and jacobian
-        tuple<Eigen::Matrix<double, 1, 6> , Eigen::Matrix<double, 2, 6>, float> res = shape_function(this->coords, gp);
+        tuple<Eigen::Matrix<double, 1, 6>, Eigen::Matrix<double, 2, 6>, float> res = shape_function(this->coords, gp);
         float j = get<2>(res);
         Eigen::MatrixXd B = get<1>(res);
         Eigen::MatrixXd N = get<0>(res);
@@ -120,9 +120,11 @@ tuple<Eigen::MatrixXd, Eigen::MatrixXd> Tri6::shear_load_vectors(float ixx, floa
         tmp << d1, d2;
         tmp2 << h1, h2;
 
-        f_psi = gp(0) * ((nu / 2 * (B.transpose() * tmp.transpose()).transpose()) + (2 * (1 + nu) * (N.transpose() * (ixx * Nx - ixy * Ny)))) * j * this->material.elastic_modulus;
+        f_psi = gp(0) * ((nu / 2 * (B.transpose() * tmp.transpose()).transpose()) +
+                         (2 * (1 + nu) * (N.transpose() * (ixx * Nx - ixy * Ny)))) * j * this->material.elastic_modulus;
 
-        f_phi = gp(0) * ((nu / 2 * (B.transpose() * tmp2.transpose()).transpose()) + (2 * (1 + nu) * (N.transpose() * (iyy * Ny - ixy * Nx)))) * j * this->material.elastic_modulus;
+        f_phi = gp(0) * ((nu / 2 * (B.transpose() * tmp2.transpose()).transpose()) +
+                         (2 * (1 + nu) * (N.transpose() * (iyy * Ny - ixy * Nx)))) * j * this->material.elastic_modulus;
 
         tuple<Eigen::MatrixXd, Eigen::MatrixXd> tup(f_psi, f_phi);
         return tup;
@@ -136,10 +138,41 @@ tuple<Eigen::MatrixXd, Eigen::MatrixXd> Tri6::shear_load_vectors(float ixx, floa
 /// \param ixy Second moment of area about the centroidal xy-axis
 /// \param omega Values of the warping function at the element nodes
 /// \return hear centre integrals about the x and y-axes *(sc_xint, sc_yint)*, warping integrals *(q_omega, i_omega, i_xomega, i_yomega)*
-//TODO: define
 tuple<float, float, float, float, float, float>
 Tri6::shear_warping_integrals(float ixx, float iyy, float ixy, Eigen::MatrixXd omega) {
 
+    double sc_xint = 0;
+    double sc_yint = 0;
+    double q_omega = 0;
+    double i_omega = 0;
+    double i_xomega = 0;
+    double i_yomega = 0;
+
+//# Gauss points for 6 point Gaussian integration
+    Eigen::MatrixXd gps = gauss_points(6);
+
+    for (int i = 0; i < gps.rows(); ++i) {
+        Eigen::MatrixXd gp = gps.row(i);
+        //# determine shape function, shape function derivative and jacobian
+        tuple<Eigen::Matrix<double, 1, 6>, Eigen::Matrix<double, 2, 6>, float> res = shape_function(this->coords, gp);
+        float j = get<2>(res);
+        Eigen::MatrixXd B = get<1>(res);
+        Eigen::MatrixXd N = get<0>(res);
+
+        //# determine x and y position at Gauss point
+        double Nx = (N * this->coords.row(0).transpose())(0);
+        double Ny = (N * this->coords.row(1).transpose())(0);
+        Eigen::MatrixXd Nomega = N * omega;
+
+        sc_xint = gp(0) * (iyy * Nx + ixy * Ny) * (pow(Nx, 2) + pow(Ny, 2)) * j * this->material.elastic_modulus;
+        sc_yint = gp(0) * (ixx * Ny + ixy * Nx) * (pow(Nx, 2) + pow(Ny, 2)) * j * this->material.elastic_modulus;
+
+        q_omega += gp(0) * Nomega(0) * j * this->material.elastic_modulus;
+        i_omega += gp(0) * pow(Nomega(0), 2) * j * this->material.elastic_modulus;
+        i_xomega += gp(0) * Nx * Nomega(0) * j * this->material.elastic_modulus;
+        i_yomega += gp(0) * Ny * Nomega(0) * j * this->material.elastic_modulus;
+    }
+    return tuple(sc_xint, sc_yint, q_omega, i_omega, i_xomega, i_yomega);
 }
 
 /// """Calculates the variables used to determine the shear deformation coefficients.
@@ -256,7 +289,7 @@ Eigen::MatrixXd gauss_points(int n) {
 /// \param gauss_point Gaussian weight and isoparametric location of the Gauss point
 /// \return The value of the shape functions *N(i)* at the given Gauss point [1 x 6],
 /// the derivative of the shape functions in the j-th global direction *B(i,j)* [2 x 6] and the determinant of the Jacobian matrix *j*
-tuple<Eigen::Matrix<double, 1, 6> , Eigen::Matrix<double, 2, 6>, float>
+tuple<Eigen::Matrix<double, 1, 6>, Eigen::Matrix<double, 2, 6>, float>
 shape_function(const Eigen::Matrix<double, 2, 6> coords, Eigen::MatrixXd gauss_point) {
 
     // cordes 2x6
