@@ -12,16 +12,15 @@
 #include "../Eigen/Core"
 
 class Material {
+public:
+    Material(std::string n, float  em, float pr, float ys, float den, std::string col);
+    float  shear_modulus();
     std::string name;
     float elastic_modulus;
     float poissons_ratio;
     float yield_strength;
     float density;
     std::string color;
-
-public:
-    Material(std::string n, float  em, float pr, float ys, float den, std::string col);
-    float  shear_modulus();
 };
 
 
